@@ -29,12 +29,17 @@ const Hero = () => {
 
   const fontProps = {
     font: "./soria-font.ttf",
+    fontSize: 0.7,
+  };
+
+  const fontPropsLarge = {
+    font: "./soria-font.ttf",
     fontSize: 0.9,
   };
 
   return (
     <>
-      <Text position={[0, 2, -10]} {...fontProps} ref={titleRef}>Azamat Safarov</Text>
+      <Text position={[0, 3, -10]} {...fontPropsLarge} ref={titleRef}>Hi, I&apos;m Azamat Safarov.</Text>
       <StarsContainer />
       <CloudContainer/>
       <group position={[0, -25, 5.69]}>
