@@ -1,4 +1,4 @@
-import { Edges, Text, TextProps } from "@react-three/drei";
+import { Edges, Image, Text, TextProps } from "@react-three/drei";
 import { ThreeEvent } from "@react-three/fiber";
 import gsap from "gsap";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -42,7 +42,13 @@ const ProjectTile = ({ project, index, position, rotation, activeId, onClick, da
     if (!projectRef.current) return;
     hoverAnimRef.current?.kill();
 
-    const [mesh, title, dateGroup, textBox, button] = projectRef.current.children;
+    const children = projectRef.current.children;
+    const mesh = children[0];
+    const imagePlane = children[1];
+    const title = children[2];
+    const dateGroup = children[3];
+    const textBox = children[4];
+    const button = children[5];
 
     hoverAnimRef.current = gsap.timeline();
     hoverAnimRef.current
@@ -55,14 +61,19 @@ const ProjectTile = ({ project, index, position, rotation, activeId, onClick, da
       }, 0)
       .to(title.position, { y: hovered ? 0.7 : -0.8 }, 0)
       .to(textBox.position, { y: hovered ? 0.7 : 0 }, 0)
-      // .to(textBox.scale, { y: hovered ? 1 : 0, x: hovered ? 1 : 0 }, 0)
       .to(textBox, { fillOpacity: hovered ? 1 : 0, duration: 0.4 }, 0)
       .to(dateGroup.position, { y: hovered ? 2.6 : isTop? 1.4 : -1.4  }, 0)
       .to(mesh.scale, { y: hovered ? 2 : 1 }, 0)
       .to((mesh as THREE.Mesh).material, { opacity: hovered ? 0.95 : 0.3 }, 0)
       .to(mesh.position, { y: hovered ? 1 : 0 }, 0);
 
-    if (project.url) {
+    if (imagePlane) {
+      hoverAnimRef.current
+        .to(imagePlane.position, { y: hovered ? 1 : 0 }, 0)
+        .to(imagePlane.scale, { y: hovered ? 2 : 1 }, 0);
+    }
+
+    if (project.url && button) {
       hoverAnimRef.current
         .to(button.scale, { y: hovered ? 1 : 0, x: hovered ? 1 : 0 }, 0)
         .to(button.position, { z: hovered ? 0.3 : -1 }, 0);
@@ -103,12 +114,28 @@ const ProjectTile = ({ project, index, position, rotation, activeId, onClick, da
       onPointerOver={handlePointerOver}
       onPointerOut={() => !isMobile && isProjectSectionActive && setDesktopHovered(false)}>
       <group ref={projectRef}>
+        {/* Base mesh */}
         <mesh>
           <planeGeometry args={[4.2, 2, 1]} />
           <meshBasicMaterial color="#FFF" transparent opacity={0.3}/>
-          {/* <meshPhysicalMaterial transmission={1} roughness={0.3} /> */}
           <Edges color="black" lineWidth={1.5} />
         </mesh>
+
+        {/* Screenshot image */}
+        {project.image && (
+          <mesh position={[0, 0, 0.01]}>
+            <planeGeometry args={[4.0, 1.8]} />
+            <meshBasicMaterial color="#FFF" transparent opacity={0.9} />
+            <Image
+              url={project.image}
+              position={[0, 0, 0.001]}
+              scale={[4.0, 1.8]}
+              transparent
+              opacity={0.85}
+            />
+          </mesh>
+        )}
+
         <Text
           {...titleProps}
           position={[-1.9, -0.8, 0.101]}
@@ -135,7 +162,6 @@ const ProjectTile = ({ project, index, position, rotation, activeId, onClick, da
           {...subtitleProps}
           maxWidth={3.8}
           position={[-1.9, 2.3, 0.1]}
-          // scale={[0, 0, 1]}
           fontSize={0.2}>
           {project.subtext}
         </Text>
