@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import gsap from 'gsap';
 
 const NAV_ITEMS = [
   { label: 'About', href: '#about' },
@@ -18,25 +17,11 @@ export default function NavBar() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    if (visible) {
-      gsap.fromTo(
-        '.nav-item',
-        { y: -30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'power2.out' }
-      );
-    }
-  }, [visible]);
-
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     const el = document.querySelector(href);
     if (el) {
-      gsap.to(window, {
-        duration: 1,
-        scrollTo: { y: el, offsetY: 80 },
-        ease: 'power2.inOut',
-      });
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -80,7 +65,6 @@ export default function NavBar() {
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
               transition: 'color 0.3s',
-              opacity: 0,
             }}
             onMouseEnter={(e) => {
               (e.target as HTMLElement).style.color = '#ff9ff3';
